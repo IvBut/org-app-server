@@ -1,0 +1,78 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NVIDIA Quarterly Financial Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        @page  {
+            size: A4;
+            margin: 50px 0;
+        }
+        .header,
+        .section {
+            margin-top: 50px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 24px;
+        }
+        .section h2 {
+            font-size: 20px;
+            color: #333;
+        }
+        .date {
+            text-align: right;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4caf50;
+            color: white;
+            text-align: left;
+            padding: 8px;
+        }
+        td {
+            padding: 8px;
+            text-align: left;
+        }
+        .rich-text {
+            margin: 20px 0;
+        }
+        .rich-text p {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>NVIDIA Quarterly Financial Report1</h1>
+    <div class="date"><%= data.personalData.name %></div>
+</div>
+<div class="section">
+    <h2>Executive Summary</h2>
+    <div class="rich-text">
+        <p>TEST</p>
+    </div>
+    <div style="position:fixed;left:12px;top:10px;">
+        <img src="<%= photo %>" alt="Header Image" style="width: 120px; height: auto;" />
+    </div>
+</div>
+</body>
+</html
