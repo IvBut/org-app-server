@@ -23,6 +23,7 @@
         <style>
             @page  {
                 size: A4;
+                margin: 0;
             }
             @tailwind base;
             @tailwind components;
@@ -32,10 +33,28 @@
                     font-family: Lato, system-ui, sans-serif!important;
                 }
             }
+
+            body {
+                margin: 0;
+                padding: 0;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .sidebar {
+                height: 100%;
+            }
+
+            .content {
+                height: 100%;
+                flex: 1 0 auto;
+                box-sizing: border-box;
+            }
         </style>
     </head>
     <%
-    const { personalData } = data;
+    const { personalData, educationList, workExperienceList, profile, languages } = data;
     let mainColor = 'rgb(246, 235, 231)';
     let fullName = helpers.getFullNameStr(personalData);
     let address = helpers.getFullAddress(personalData);
@@ -50,19 +69,51 @@
     });
 
     const sections = helpers.getSections(data)
+
+    const getEducationStr = ({ institution, location, startYear, endYear }) => {
+      const start = helpers.dateFormatter(startYear, 'yyyy');
+      const end = helpers.dateFormatter(endYear, 'yyyy');
+      const dateStr = [start, end].filter(el => !!el).join(`\u2013`)
+      return [institution, location, dateStr].filter(el => !!el).join(' / ')
+    }
+
+    const getWorkStr = ({ company, location, startDate, endDate, stillWorking }) => {
+        const start = helpers.dateFormatter(startDate, 'LLL yyyy');
+        const end = stillWorking ? 'Еще работаю' : helpers.dateFormatter(endDate, 'LLL yyyy');
+        const dateStr = [start, end].filter(el => !!el).join(`\u2013`)
+        return [company, location, dateStr].filter(el => !!el).join(' / ')
+    }
+
+    const hasPhoto = () => !!photo
+
+    const generateLangRating = ({ language, level }) => {
+      const val = helpers.langLevelToPercent(level)
+      return `
+             <h3 class="capitalize tracking-wide">${language}</h3>
+             <div class="flex items-center">
+                  <div class="w-2/4 h-3 bg-gray-200 rounded dark:bg-gray-700">
+                       <div class="h-3 rounded" style="width: ${val}; background-color: ${mainColor}"></div>
+                  </div>
+                  <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400">${level}</span>
+             </div>
+      `
+    }
+
     %>
-    <body class="size-full">
-        <div class="grid grid-cols-12 size-full">
-            <div class="col-span-3" style="background-color: <%=mainColor%>">
+    <body>
+        <div class="content grid grid-cols-12 size-full">
+            <div class="sidebar col-span-3" style="background-color: <%=mainColor%>">
                 <div class="mt-5 pt-3 px-6">
-                    <div class="relative inline-block w-full text-center">
-                        <img
-                                src="<%= photo %>"
-                                alt="avatar"
-                                class="relative inline-block h-36 w-36 !rounded-full object-cover object-center"
-                        />
-                    </div>
-                    <div class="mt-6">
+                    <%if (hasPhoto()) { %>
+                        <div class="relative inline-block w-full text-center">
+                            <img
+                                    src="<%= photo %>"
+                                    alt="avatar"
+                                    class="relative inline-block h-36 w-36 !rounded-full object-cover object-center"
+                            />
+                        </div>
+                    <% } %>
+                    <div class="<%=hasPhoto() ? 'mt-6' : ''%>">
                         <% details.forEach((el,index) => {%>
                         <div class="flex items-center space-x-2 <%=index !== 0 ? 'mt-3' : ''%>">
                             <i class="<%=el.icon%>"></i>
@@ -83,22 +134,49 @@
                 </div>
                 <div class="pl-6 pt-6">
                     <% sections.forEach((el,index) => {%>
-                    <div class="<%=index !== 0 ? 'pt-10' : ''%>">
-                        <h2 class="font-medium mb-2 text-lg text-black uppercase tracking-wide text-black"><%=el.sectionName%></h2>
-                        <hr class="h-0.5 bg-gray-100 border-0 rounded" style="background-color: <%=mainColor%>">
-                        <% switch (el.sectionId) {
-                        case helpers.SECTION_ID.EDUCATION: %>
-                        educ>>
-                        <% break;
-                        case 2: %>
-                        qwer
-                        <% break;
-                        case 3: %>
-                        zxcv
-                        <% break;
-                            default:
-                                break; } %>
-                    </div>
+                        <div class="<%=index !== 0 ? 'pt-10' : ''%>">
+                            <h2 class="font-medium mb-2 text-lg text-black uppercase tracking-wide text-black"><%=el.sectionName%></h2>
+                            <hr class="h-0.5 bg-gray-100 border-0 rounded" style="background-color: <%=mainColor%>">
+                            <% switch (el.sectionId) {
+                            case helpers.SECTION_ID.EDUCATION: %>
+                                <% educationList.forEach(function(educ, educIdx) { %>
+                                    <div class="pt-3 pr-6 text-black font-normal text-base">
+                                        <h3 class="capitalize tracking-wide"><%= educ.degree %></h3>
+                                        <p class="pt-1"><%=getEducationStr(educ)%></p>
+                                        <%if (!!educ?.description) { %>
+                                            <p class="pt-1"><%-educ.description%></p>
+                                        <% } %>
+                                    </div>
+                                <% }); %>
+                            <% break;
+                            case helpers.SECTION_ID.WORK_EXPERIENCE: %>
+                                <% workExperienceList.forEach(function(work, workIdx) { %>
+                                    <div class="pt-3 pr-6 text-black font-normal text-base">
+                                        <h3 class="capitalize tracking-wide"><%= work.jobPosition %></h3>
+                                        <p class="pt-1"><%=getWorkStr(work)%></p>
+                                        <%if (!!work?.description) { %>
+                                            <p class="pt-1"><%-work.description%></p>
+                                        <% } %>
+                                    </div>
+                                <% }); %>
+                            <% break;
+                            case helpers.SECTION_ID.PROFILE: %>
+                                <div class="pt-3 pr-6 text-black font-normal text-base">
+                                    <%if (!!profile?.summary) { %>
+                                        <p class="pt-1"><%-profile.summary%></p>
+                                    <% } %>
+                                </div>
+                            <% break;
+                            case helpers.SECTION_ID.LANGUAGES: %>
+                                <% languages.forEach(function(lang, langIdx) { %>
+                                    <div class="pt-3 pr-6 text-black font-normal text-base">
+                                        <%-generateLangRating(lang)%>
+                                    </div>
+                                <% }); %>
+                            <% break;
+                                default:
+                                    break; } %>
+                        </div>
                     <% }); %>
                 </div>
             </div>

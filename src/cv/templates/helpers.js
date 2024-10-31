@@ -1,4 +1,6 @@
 import * as _ from 'lodash';
+import * as dateFns from 'date-fns';
+import { ru } from 'date-fns/locale/ru';
 
 const SECTION_ID = {
   EDUCATION: 'EDUCATION',
@@ -7,6 +9,33 @@ const SECTION_ID = {
   LANGUAGES: 'LANGUAGES',
   LINKS: 'LINKS',
   SKILLS: 'SKILLS',
+};
+
+const LANGUAGE_LEVEL = {
+  A1: 'A1',
+  A2: 'A2',
+  B1: 'B1',
+  B2: 'B2',
+  C1: 'C1',
+  C2: 'C2',
+};
+
+const langLevelToPercent = (level) => {
+  const ORDER = [
+    LANGUAGE_LEVEL.A1,
+    LANGUAGE_LEVEL.A2,
+    LANGUAGE_LEVEL.B1,
+    LANGUAGE_LEVEL.B2,
+    LANGUAGE_LEVEL.C1,
+    LANGUAGE_LEVEL.C2,
+  ];
+  const idx = ORDER.findIndex((el) => el === level);
+  if (idx === -1) return ``;
+  const onePart = (100 / Object.keys(LANGUAGE_LEVEL).length).toFixed(2);
+  console.log(onePart);
+  // const val = ORDER[idx];
+  const percent = (onePart * (idx + 1)).toFixed(2);
+  return percent > 100 ? '100%' : `${percent}%`;
 };
 
 const SECTION_DATA_BY_ID = {
@@ -94,6 +123,18 @@ const getFullAddress = ({ country, city, address, postalCode }) => {
   return _.compact(str).join(',');
 };
 
+const dateFormatter = (
+  date,
+  outputFormat = 'dd.MM.yyyy',
+  emptyValue = '',
+  options = { locale: ru },
+) => {
+  if (!date && date !== 0) return emptyValue;
+  return dateFns.isValid(new Date(date))
+    ? dateFns.formatDate(date, outputFormat, options)
+    : emptyValue;
+};
+
 export const helpers = {
   getFullNameStr,
   getFullAddress,
@@ -102,4 +143,7 @@ export const helpers = {
   allFieldFilled,
   SECTION_ID,
   _lodash_: _,
+  dateFormatter,
+  LANGUAGE_LEVEL,
+  langLevelToPercent,
 };

@@ -62,6 +62,7 @@ export class CvService {
       ],
     });
     const page = await browser.newPage();
+    await page.emulateMediaType('screen');
     await page.setContent(template, { waitUntil: 'networkidle0' });
 
     const buffer = await page.pdf({
