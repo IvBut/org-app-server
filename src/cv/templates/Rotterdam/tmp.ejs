@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en" class="size-full">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <title>CV</title>
+        <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+        <script>
+          tailwind.config = {
+            theme: {
+              extend: {
+                fontFamily: {
+                  lato: ['"Lato"', "sans-serif"]
+                }
+              }
+            },
+          }
+        </script>
+        <style>
+            @page  {
+                size: A4;
+            }
+            @tailwind base;
+            @tailwind components;
+            @tailwind utilities;
+            @layer base {
+                html {
+                    font-family: Lato, system-ui, sans-serif!important;
+                }
+            }
+        </style>
+    </head>
+    <%
+    const { personalData } = data;
+    let mainColor = 'rgb(246, 235, 231)';
+    let fullName = helpers.getFullNameStr(personalData);
+    let address = helpers.getFullAddress(personalData);
+    let phone = personalData?.phone ? `+${personalData.phone}` : '';
+    let email = personalData?.email ?? '';
+    const details = helpers._lodash_.filter([
+        { icon: 'fa-solid fa-phone', value: phone },
+        { icon: 'fa-solid fa-envelope', value: email },
+        { icon: 'fa-solid fa-location-pin', value: address }
+    ], (o) => {
+      return !!o.value
+    });
+
+    const sections = helpers.getSections(data)
+    %>
+    <body class="size-full">
+        <div class="grid grid-cols-12 size-full">
+            <div class="col-span-3" style="background-color: <%=mainColor%>">
+                <div class="mt-5 pt-3 px-6">
+                    <div class="relative inline-block w-full text-center">
+                        <img
+                                src="<%= photo %>"
+                                alt="avatar"
+                                class="relative inline-block h-36 w-36 !rounded-full object-cover object-center"
+                        />
+                    </div>
+                    <div class="mt-6">
+                        <% details.forEach((el,index) => {%>
+                        <div class="flex items-center space-x-2 <%=index !== 0 ? 'mt-3' : ''%>">
+                            <i class="<%=el.icon%>"></i>
+                            <p class="text-pretty text-xs text-black"><%=el.value%></p>
+                        </div>
+                        <% }); %>
+                    </div>
+                    <div>
+                        <h2 class="font-normal text-lg text-black uppercase tracking-wide text-black">Skill</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-9 bg-white">
+                <div class="mt-5 py-3 pl-6" style="background-color: <%=mainColor%>">
+                    <h1 class="font-bold text-6xl text-black capitalize">
+                        <%=fullName%>
+                    </h1>
+                </div>
+                <div class="pl-6 pt-6">
+                    <% sections.forEach((el,index) => {%>
+                    <div class="<%=index !== 0 ? 'pt-10' : ''%>">
+                        <h2 class="font-medium mb-2 text-lg text-black uppercase tracking-wide text-black"><%=el.sectionName%></h2>
+                        <hr class="h-0.5 bg-gray-100 border-0 rounded" style="background-color: <%=mainColor%>">
+                        <% switch (el.sectionId) {
+                        case helpers.SECTION_ID.EDUCATION: %>
+                        educ>>
+                        <% break;
+                        case 2: %>
+                        qwer
+                        <% break;
+                        case 3: %>
+                        zxcv
+                        <% break;
+                            default:
+                                break; } %>
+                    </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    </body>
+</html

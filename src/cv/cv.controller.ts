@@ -30,7 +30,11 @@ export class CvController {
     )
     file: Express.Multer.File,
   ) {
-    return this.cvService.getPreviewHtml(createCvModel(body.cvData), file);
+    const html = await this.cvService.getPreviewHtml(
+      createCvModel(body.cvData),
+      file,
+    );
+    return html;
   }
 
   @Post()
@@ -51,7 +55,7 @@ export class CvController {
   }
 
   @Get('/:id/download')
-  async downloadFile(@Param() id: string) {
+  async downloadFile(@Param('id') id: string) {
     return this.cvService.getFileFromFS(id, 'downloadedTestPdf');
   }
 }

@@ -5,6 +5,7 @@ import * as path from 'path';
 import { ICvDataModel } from './models/cvData.model';
 import * as process from 'process';
 import * as puppeteer from 'puppeteer';
+import { helpers } from './templates/helpers.js';
 
 @Injectable()
 export class CvService {
@@ -29,23 +30,28 @@ export class CvService {
       disposition: `attachment; filename="${returnedFileName}.pdf"`,
     });
   }
-  getPreviewHtml(data: ICvDataModel, file: Express.Multer.File): string {
+  async getPreviewHtml(
+    data: ICvDataModel,
+    file: Express.Multer.File,
+  ): Promise<string> {
     const dirPath = path.join(process.cwd(), 'src/cv/templates');
-    const templatePath = path.resolve(dirPath, 'tmp.ejs');
-    const photo = file?.size
-      ? `data:image/jpeg;base64,${file.buffer.toString('base64')}`
-      : '';
+    const templatePath = path.resolve(dirPath, 'Rotterdam/tmp.ejs');
 
     if (!fs.existsSync(templatePath)) {
       throw new Error(`Template file '${templatePath}' not found.`);
     }
-    const template = fs.readFileSync(templatePath, 'utf-8');
-
-    return ejs.render(template, { data, photo });
+    const photo = file?.size
+      ? `data:image/jpeg;base64,${file.buffer.toString('base64')}`
+      : '';
+    return ejs.renderFile(templatePath, {
+      data,
+      photo,
+      helpers,
+    });
   }
 
   async htmlToPdf(data: ICvDataModel, file: Express.Multer.File) {
-    const template = this.getPreviewHtml(data, file);
+    const template = await this.getPreviewHtml(data, file);
 
     const browser = await puppeteer.launch({
       headless: true,
