@@ -54,12 +54,14 @@
         </style>
     </head>
     <%
-    const { personalData, educationList, workExperienceList, profile, languages } = data;
+    const { personalData, educationList, workExperienceList, profile, languages, skills } = data;
     let mainColor = 'rgb(246, 235, 231)';
+    let dividerColor = 'rgba(238, 217, 206, 0.5)';
     let fullName = helpers.getFullNameStr(personalData);
     let address = helpers.getFullAddress(personalData);
     let phone = personalData?.phone ? `+${personalData.phone}` : '';
     let email = personalData?.email ?? '';
+    let birthDay = helpers.dateFormatter(personalData?.birtDate)
     const details = helpers._lodash_.filter([
         { icon: 'fa-solid fa-phone', value: phone },
         { icon: 'fa-solid fa-envelope', value: email },
@@ -69,6 +71,12 @@
     });
 
     const sections = helpers.getSections(data)
+    const skillsSection = sections.find(el => el.sectionId === helpers.SECTION_ID.SKILLS);
+    if(skillsSection) {
+      helpers._lodash_.remove(sections, (el) => {
+        return el.sectionId === helpers.SECTION_ID.SKILLS
+      })
+    }
 
     const getEducationStr = ({ institution, location, startYear, endYear }) => {
       const start = helpers.dateFormatter(startYear, 'yyyy');
@@ -87,16 +95,14 @@
     const hasPhoto = () => !!photo
 
     const generateLangRating = ({ language, level }) => {
-      const val = helpers.langLevelToPercent(level)
-      return `
-             <h3 class="capitalize tracking-wide">${language}</h3>
-             <div class="flex items-center">
-                  <div class="w-2/4 h-3 bg-gray-200 rounded dark:bg-gray-700">
-                       <div class="h-3 rounded" style="width: ${val}; background-color: ${mainColor}"></div>
-                  </div>
-                  <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400">${level}</span>
-             </div>
-      `
+      const width = helpers.levelToPercent(level, 'lang')
+      const label = `${language}\u2013${level}`
+      return helpers.Rating(width, label, mainColor)
+    }
+
+    const generateSkillRating = ({ name, level }) => {
+        const width = helpers.levelToPercent(level)
+        return helpers.Rating(width, name, 'rgb(53, 53, 49)', undefined, 4)
     }
 
     %>
@@ -121,13 +127,28 @@
                         </div>
                         <% }); %>
                     </div>
+                    <hr class="h-1.5 w-100 bg-gray-100 border-0 rounded my-3" style="background-color: <%=dividerColor%>" />
                     <div>
-                        <h2 class="font-normal text-lg text-black uppercase tracking-wide text-black">Skill</h2>
+                        <h2 class="text-center font-medium text-lg text-black uppercase tracking-wide text-black">Дата Рождения</h2>
+                        <p><%=birthDay%></p>
                     </div>
+
+                        <%if (!!skillsSection) { %>
+                            <h2 class="text-center font-medium text-lg text-black uppercase tracking-wide text-black"><%=skillsSection?.sectionName%></h2>
+                            <% skills.forEach(function(skill, skillIdx) { %>
+                                <div class="<%=skillIdx !== 0 ? 'mt-6' : ''%>">
+                                    <% skill.data.forEach(function(skillData, skillDataIdx) { %>
+                                        <div class="pt-1 text-black font-normal text-base">
+                                            <%-generateSkillRating(skillData)%>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            <% }); %>
+                        <% } %>
                 </div>
             </div>
             <div class="col-span-9 bg-white">
-                <div class="mt-5 py-3 pl-6" style="background-color: <%=mainColor%>">
+                <div class="mt-5 pt-3 pb-12 pl-6" style="background-color: <%=mainColor%>">
                     <h1 class="font-bold text-6xl text-black capitalize">
                         <%=fullName%>
                     </h1>
@@ -169,7 +190,7 @@
                             <% break;
                             case helpers.SECTION_ID.LANGUAGES: %>
                                 <% languages.forEach(function(lang, langIdx) { %>
-                                    <div class="pt-3 pr-6 text-black font-normal text-base">
+                                    <div class="pt-3 pr-6 w-2/4 text-black font-normal text-base">
                                         <%-generateLangRating(lang)%>
                                     </div>
                                 <% }); %>
@@ -182,4 +203,4 @@
             </div>
         </div>
     </body>
-</html
+</html>

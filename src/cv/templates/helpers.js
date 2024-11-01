@@ -19,21 +19,37 @@ const LANGUAGE_LEVEL = {
   C1: 'C1',
   C2: 'C2',
 };
+const SKILL_LEVEL = {
+  Novice: 'Novice',
+  Beginner: 'Beginner',
+  Skillful: 'Skillful',
+  Experienced: 'Experienced',
+  Advanced: 'Advanced',
+  Expert: 'Expert',
+};
 
-const langLevelToPercent = (level) => {
-  const ORDER = [
-    LANGUAGE_LEVEL.A1,
-    LANGUAGE_LEVEL.A2,
-    LANGUAGE_LEVEL.B1,
-    LANGUAGE_LEVEL.B2,
-    LANGUAGE_LEVEL.C1,
-    LANGUAGE_LEVEL.C2,
-  ];
+const levelToPercent = (level, type) => {
+  const ORDER =
+    type === 'lang'
+      ? [
+          LANGUAGE_LEVEL.A1,
+          LANGUAGE_LEVEL.A2,
+          LANGUAGE_LEVEL.B1,
+          LANGUAGE_LEVEL.B2,
+          LANGUAGE_LEVEL.C1,
+          LANGUAGE_LEVEL.C2,
+        ]
+      : [
+          SKILL_LEVEL.Novice,
+          SKILL_LEVEL.Beginner,
+          SKILL_LEVEL.Skillful,
+          SKILL_LEVEL.Experienced,
+          SKILL_LEVEL.Advanced,
+          SKILL_LEVEL.Expert,
+        ];
   const idx = ORDER.findIndex((el) => el === level);
   if (idx === -1) return ``;
   const onePart = (100 / Object.keys(LANGUAGE_LEVEL).length).toFixed(2);
-  console.log(onePart);
-  // const val = ORDER[idx];
   const percent = (onePart * (idx + 1)).toFixed(2);
   return percent > 100 ? '100%' : `${percent}%`;
 };
@@ -135,6 +151,24 @@ const dateFormatter = (
     : emptyValue;
 };
 
+const Rating = (
+  width,
+  label,
+  mainColor,
+  subColor = 'rgb(156 163 175)',
+  height = 3,
+) => {
+  const innerHeight = `h-${height ?? 3}`;
+  return `
+             <h3 class="capitalize tracking-wide">${label}</h3>
+             <div class="flex items-center">
+                  <div class="w-full ${innerHeight} rounded" style="background-color: ${subColor}">
+                       <div class="${innerHeight} rounded" style="width: ${width}; background-color: ${mainColor}"></div>
+                  </div>
+             </div>
+      `;
+};
+
 export const helpers = {
   getFullNameStr,
   getFullAddress,
@@ -145,5 +179,6 @@ export const helpers = {
   _lodash_: _,
   dateFormatter,
   LANGUAGE_LEVEL,
-  langLevelToPercent,
+  levelToPercent,
+  Rating,
 };
