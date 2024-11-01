@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="size-full">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -34,22 +34,17 @@
                 }
             }
 
-            body {
+            html{
+                box-sizing: border-box;
+                height: 100%;
+                width: 100%;
                 margin: 0;
                 padding: 0;
-                height: 100vh;
-                display: flex;
-                flex-direction: column;
             }
-
-            .sidebar {
-                height: 100%;
-            }
-
-            .content {
-                height: 100%;
-                flex: 1 0 auto;
-                box-sizing: border-box;
+            *,
+            *:after,
+            *:before{
+                box-sizing: inherit;
             }
         </style>
     </head>
@@ -107,8 +102,13 @@
 
     %>
     <body>
-        <div class="content grid grid-cols-12 size-full">
-            <div class="sidebar col-span-3" style="background-color: <%=mainColor%>">
+        <div class="fixed top-0 left-0 bottom-0 right-0 -z-50">
+            <div class="grid size-full grid-cols-12 -z-50">
+                <div class="col-span-3 -z-50" style="background-color: <%=mainColor%>"></div>
+            </div>
+        </div>
+        <div class="grid grid-cols-12 size-full z-500">
+            <div class="col-span-3 z-1000">
                 <div class="mt-5 pt-3 px-6">
                     <%if (hasPhoto()) { %>
                         <div class="relative inline-block w-full text-center">
@@ -155,49 +155,49 @@
                 </div>
                 <div class="pl-6 pt-6">
                     <% sections.forEach((el,index) => {%>
-                        <div class="<%=index !== 0 ? 'pt-10' : ''%>">
-                            <h2 class="font-medium mb-2 text-lg text-black uppercase tracking-wide text-black"><%=el.sectionName%></h2>
-                            <hr class="h-0.5 bg-gray-100 border-0 rounded" style="background-color: <%=mainColor%>">
-                            <% switch (el.sectionId) {
-                            case helpers.SECTION_ID.EDUCATION: %>
-                                <% educationList.forEach(function(educ, educIdx) { %>
-                                    <div class="pt-3 pr-6 text-black font-normal text-base">
-                                        <h3 class="capitalize tracking-wide"><%= educ.degree %></h3>
-                                        <p class="pt-1"><%=getEducationStr(educ)%></p>
-                                        <%if (!!educ?.description) { %>
-                                            <p class="pt-1"><%-educ.description%></p>
-                                        <% } %>
-                                    </div>
-                                <% }); %>
-                            <% break;
-                            case helpers.SECTION_ID.WORK_EXPERIENCE: %>
-                                <% workExperienceList.forEach(function(work, workIdx) { %>
-                                    <div class="pt-3 pr-6 text-black font-normal text-base">
-                                        <h3 class="capitalize tracking-wide"><%= work.jobPosition %></h3>
-                                        <p class="pt-1"><%=getWorkStr(work)%></p>
-                                        <%if (!!work?.description) { %>
-                                            <p class="pt-1"><%-work.description%></p>
-                                        <% } %>
-                                    </div>
-                                <% }); %>
-                            <% break;
-                            case helpers.SECTION_ID.PROFILE: %>
-                                <div class="pt-3 pr-6 text-black font-normal text-base">
-                                    <%if (!!profile?.summary) { %>
-                                        <p class="pt-1"><%-profile.summary%></p>
-                                    <% } %>
-                                </div>
-                            <% break;
-                            case helpers.SECTION_ID.LANGUAGES: %>
-                                <% languages.forEach(function(lang, langIdx) { %>
-                                    <div class="pt-3 pr-6 w-2/4 text-black font-normal text-base">
-                                        <%-generateLangRating(lang)%>
-                                    </div>
-                                <% }); %>
-                            <% break;
-                                default:
-                                    break; } %>
+                    <div class="<%=index !== 0 ? 'pt-10' : ''%>">
+                        <h2 class="font-medium mb-2 text-lg text-black uppercase tracking-wide text-black"><%=el.sectionName%></h2>
+                        <hr class="h-0.5 bg-gray-100 border-0 rounded" style="background-color: <%=mainColor%>">
+                        <% switch (el.sectionId) {
+                        case helpers.SECTION_ID.EDUCATION: %>
+                        <% educationList.forEach(function(educ, educIdx) { %>
+                            <div class="pt-3 pr-6 text-black font-normal text-base">
+                                <h3 class="capitalize tracking-wide"><%= educ.degree %></h3>
+                                <p class="pt-1"><%=getEducationStr(educ)%></p>
+                                <%if (!!educ?.description) { %>
+                                <p class="pt-1"><%-educ.description%></p>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                        <% break;
+                        case helpers.SECTION_ID.WORK_EXPERIENCE: %>
+                        <% workExperienceList.forEach(function(work, workIdx) { %>
+                            <div class="pt-3 pr-6 text-black font-normal text-base">
+                                <h3 class="capitalize tracking-wide"><%= work.jobPosition %></h3>
+                                <p class="pt-1"><%=getWorkStr(work)%></p>
+                                <%if (!!work?.description) { %>
+                                <p class="pt-1"><%-work.description%></p>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                        <% break;
+                        case helpers.SECTION_ID.PROFILE: %>
+                        <div class="pt-3 pr-6 text-black font-normal text-base">
+                            <%if (!!profile?.summary) { %>
+                            <p class="pt-1"><%-profile.summary%></p>
+                            <% } %>
                         </div>
+                        <% break;
+                        case helpers.SECTION_ID.LANGUAGES: %>
+                        <% languages.forEach(function(lang, langIdx) { %>
+                        <div class="pt-3 pr-6 w-2/4 text-black font-normal text-base">
+                            <%-generateLangRating(lang)%>
+                        </div>
+                        <% }); %>
+                        <% break;
+                            default:
+                                break; } %>
+                    </div>
                     <% }); %>
                 </div>
             </div>
