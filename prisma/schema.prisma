@@ -14,14 +14,26 @@ enum Role {
 
 model User {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
   email     String   @unique
   password  String
-  role      Role     @default(USER)
+  role      Role[]   @default([USER])
   CVs       CV[]
+  tokens    Token[]
 
   @@map("users")
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id") @db.Uuid
+  tokenHash String   @map("token_hash")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  expiredAt DateTime @map("expired_at") @db.Timestamptz()
+
+  @@map("tokens")
 }
 
 model CV {
@@ -29,8 +41,8 @@ model CV {
   data      Json     @db.Json
   user      User     @relation(fields: [userId], references: [id])
   userId    String   @map("user_id") @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
 
   @@map("cvs")
 }
